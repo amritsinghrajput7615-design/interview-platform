@@ -129,12 +129,12 @@ export default function Login() {
     const token = credentialResponse.credential;
 
     const res = await axios.post(
-      'http://localhost:3000/auth/google',
+      import.meta.env.VITE_API_URL + '/auth/google',
       { token },
       { withCredentials: true }
     );
 
-    alert('Google Login Successful');
+   
 
     // ✅ Save token (VERY IMPORTANT)
     localStorage.setItem('token', res.data.token);

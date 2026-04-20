@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
 })
 
@@ -23,7 +23,7 @@ export const generateInterviewReport = async ({ jobDescription, selfDescription,
     })
 
     // ✅ Axios already parses JSON
-    console.log("✅ AXIOS RESPONSE:", response.data)
+    
 
     return response.data  // ✅ IMPORTANT: return full response
 }
