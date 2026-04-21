@@ -111,7 +111,11 @@ async function googleLogin(req, res) {
       process.env.JWT_SECRET
     );
 
-    res.cookie("token", jwtToken);
+   res.cookie("token", jwtToken, {
+  httpOnly: true,
+  secure: true,        // ✅ REQUIRED for HTTPS
+  sameSite: "none"     // ✅ REQUIRED for cross-origin
+});
 
     res.status(200).json({
       message: "Google login successful",
