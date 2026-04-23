@@ -35,12 +35,12 @@ export const useInterview = () => {
                 resumeFile
             })
 
-            // 🔥 FIX: extract interviewReport correctly
-            const data = response?.interviewReport || {}
+            // 🔥 FIX: check if interviewReport exists
+            if (!response.interviewReport) {
+                throw new Error(response.message || "Failed to generate interview report")
+            }
 
-          
-
-            
+            const data = response.interviewReport
 
             setReport(data)
 
@@ -48,7 +48,7 @@ export const useInterview = () => {
 
         } catch (error) {
             console.log(error)
-            return {}
+            throw error // re-throw to let caller handle
         } finally {
             setLoading(false)
         }

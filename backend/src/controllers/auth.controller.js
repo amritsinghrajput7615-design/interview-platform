@@ -24,17 +24,21 @@ async function userRegister(req, res) {
         const token = jwt.sign({
             id: user._id,
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
-         res.cookie('token',token)
-
-         return res.status(201).json({
-            message: 'User registered successfully',
-            success:'true',
-             user: {
-                id: user._id,
-                username: user.username,
-                email: user.email
-             }
+         res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000
          })
+return res.status(201).json({
+  message: 'User registered successfully',
+  token,
+  user: {
+    id: user._id,
+    username: user.username,
+    email: user.email
+  }
+});
         
         }
 
@@ -59,19 +63,17 @@ async function login(req, res) {
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    path: "/"
-  });
-
-  const { password: _, ...safeUser } = user._doc;
-
-  res.json({
-    user: safeUser
-  });
+ const { password: _, ...safeUser } = user._doc;
+ res.cookie('token', token, {
+   httpOnly: true,
+   secure: process.env.NODE_ENV === 'production',
+   sameSite: 'lax',
+   maxAge: 24 * 60 * 60 * 1000
+ });
+ res.json({
+  token,
+  user: safeUser
+});
 }
 
 
@@ -108,24 +110,27 @@ async function googleLogin(req, res) {
     // ✅ Create JWT (same as your normal login)
     const jwtToken = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
     );
 
-   res.cookie("token", jwtToken, {
-  httpOnly: true,
-  secure: true,        // ✅ REQUIRED for HTTPS
-  sameSite: "none"     // ✅ REQUIRED for cross-origin
-});
+ 
+   res.cookie('token', jwtToken, {
+     httpOnly: true,
+     secure: process.env.NODE_ENV === 'production',
+     sameSite: 'lax',
+     maxAge: 24 * 60 * 60 * 1000
+   });
 
-    res.status(200).json({
-      message: "Google login successful",
-      token: jwtToken,
-      user: {
-        id: user._id,
-        email: user.email,
-        username: user.username
-      }
-    });
+   res.status(200).json({
+  message: "Google login successful",
+  token: jwtToken,
+  user: {
+    id: user._id,
+    email: user.email,
+    username: user.username
+  }
+});
 
   } catch (error) {
     console.error(error);

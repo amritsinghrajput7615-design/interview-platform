@@ -13,6 +13,7 @@ export const useAuth = () => {
 
       // ✅ FIX
       setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
     } catch (err) {
       console.log(err);
@@ -28,6 +29,7 @@ export const useAuth = () => {
 
       // ✅ FIX
       setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
     } catch (err) {
       console.log(err);
@@ -41,6 +43,7 @@ export const useAuth = () => {
     try {
       await logout();
       setUser(null);
+      localStorage.removeItem('user');
     } catch (err) {
       console.log(err);
     } finally {
@@ -56,14 +59,27 @@ export const useAuth = () => {
         // ✅ FIX
         if (data?.user) {
           setUser(data.user);
+          localStorage.setItem('user', JSON.stringify(data.user));
         }
 
       } catch (err) {
         console.log(err);
+        setUser(null);
+        localStorage.removeItem('user');
       } finally {
         setLoading(false);
       }
     };
+
+    // Check localStorage first
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
+    }
 
     getAndSetUser();
   }, []);

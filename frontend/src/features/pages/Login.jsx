@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router"
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import axios from "axios";
 const NeuralNetSVG = () => (
   <svg viewBox="0 0 420 420" className="w-full h-full max-w-md opacity-85">
@@ -129,7 +129,7 @@ export default function Login() {
     const token = credentialResponse.credential;
 
     const res = await axios.post(
-      import.meta.env.VITE_API_URL + '/auth/google',
+      `${import.meta.env.VITE_API_URL}/auth/google`,
       { token },
       { withCredentials: true }
     );
@@ -137,7 +137,7 @@ export default function Login() {
    
 
     // ✅ Save token (VERY IMPORTANT)
-    localStorage.setItem('token', res.data.token);
+    // localStorage.setItem('token', res.data.token); // removed since using cookies
 
     navigate('/');
 
@@ -216,10 +216,12 @@ export default function Login() {
               {/* Social login buttons — type="button" so they don't trigger form submit */}
               <div className="grid grid-cols-2 gap-3 mb-6 fu2">
                 <div className="flex justify-center">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={() => console.log('Login Failed')}
-                  />
+                  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => console.log('Login Failed')}
+                    />
+                  </GoogleOAuthProvider>
                 </div>
                 {[
                   {

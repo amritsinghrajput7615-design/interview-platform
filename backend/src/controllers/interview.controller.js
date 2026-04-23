@@ -8,19 +8,26 @@ const interviewReportModel = require("../models/InterviewReport.model")
 async function generateInterViewReportController(req, res) {
     
     try {
-        const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
         const { selfDescription, jobDescription } = req.body
 
+        if (!jobDescription || !jobDescription.trim()) {
+            return res.status(400).json({ message: 'Job description is required.' })
+        }
+
+        const resumeText = req.file
+            ? (await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()).text
+            : ''
+
         const interViewReportByAi = await generateInterviewReport({
-            resume: resumeContent.text,
-            selfDescription,
+            resume: resumeText,
+            selfDescription: selfDescription || '',
             jobDescription
         })
 
         // ✅ FORMAT DATA TO MATCH SCHEMA
  const formattedData = {
     user: req.user.id,
-    resume: resumeContent.text,
+    resume: resumeText || selfDescription || jobDescription || '',
     selfDescription,
     jobDescription,
 

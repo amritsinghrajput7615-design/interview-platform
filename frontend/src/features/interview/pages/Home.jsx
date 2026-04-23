@@ -12,8 +12,19 @@ const Home = () => {
 
     const navigate = useNavigate()
 
-    const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
+const handleGenerateReport = async () => {
+    const resumeFile = resumeInputRef.current.files[0]
+
+    if (!jobDescription.trim()) {
+        alert("Job description is required")
+        return
+    }
+
+    if (!resumeFile && !selfDescription.trim()) {
+        alert("Provide resume or self description")
+        return
+    }
+
     try {
         const data = await generateReport({
             jobDescription,
@@ -21,20 +32,20 @@ const Home = () => {
             resumeFile
         })
 
+        console.log("RESPONSE:", data)
 
-        const interviewId = data?._id
+        const interviewId = data._id
+
         if (!interviewId) {
-            throw new Error("Interview ID missing")
+            console.error("Interview report created but no _id:", data)
+            throw new Error("Interview report created but missing ID")
         }
 
-        // ✅ redirect or use ID
         navigate(`/report/${interviewId}`)
-
     } catch (error) {
         console.error(error)
     }
 }
-
     if (loading) {
         return (
             <main className='loading-screen'>

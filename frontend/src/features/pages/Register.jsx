@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import axios from "axios";
 
 const OrbitGraphic = () => (
@@ -239,10 +239,12 @@ export default function Register() {
 
               {/* Google Login */}
               <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => console.log('Login Failed')}
-                />
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => console.log('Login Failed')}
+                  />
+                </GoogleOAuthProvider>
               </div>
 
             </form>
