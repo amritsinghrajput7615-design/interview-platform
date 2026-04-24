@@ -1,4 +1,4 @@
-require("dotenv").config();
+
 const cookie = require('cookie-parser');
 const authRourte = require('./routes/auth.route');
 const express = require('express')
