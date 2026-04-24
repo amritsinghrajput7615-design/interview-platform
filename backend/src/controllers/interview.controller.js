@@ -1,7 +1,7 @@
-const pdfParse = require("pdf-parse")
+
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/InterviewReport.model")
-
+const pdfParse = require("pdf-parse-fork")
 /**
  * @description Controller to generate interview report based on user self description, resume and job description.
  */
@@ -14,10 +14,12 @@ async function generateInterViewReportController(req, res) {
             return res.status(400).json({ message: 'Job description is required.' })
         }
 
-        const resumeText = req.file
-            ? (await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()).text
-            : ''
+       
 
+// Usage stays the same:
+const resumeText = req.file
+    ? (await pdfParse(req.file.buffer)).text
+    : ''
         const interViewReportByAi = await generateInterviewReport({
             resume: resumeText,
             selfDescription: selfDescription || '',

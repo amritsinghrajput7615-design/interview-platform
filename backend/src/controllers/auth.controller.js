@@ -27,7 +27,7 @@ async function userRegister(req, res) {
          res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000
          })
 return res.status(201).json({
@@ -67,7 +67,7 @@ async function login(req, res) {
  res.cookie('token', token, {
    httpOnly: true,
    secure: process.env.NODE_ENV === 'production',
-   sameSite: 'lax',
+   sameSite: 'none',
    maxAge: 24 * 60 * 60 * 1000
  });
  res.json({
@@ -118,7 +118,7 @@ async function googleLogin(req, res) {
    res.cookie('token', jwtToken, {
      httpOnly: true,
      secure: process.env.NODE_ENV === 'production',
-     sameSite: 'lax',
+     sameSite: 'none',
      maxAge: 24 * 60 * 60 * 1000
    });
 
@@ -149,11 +149,17 @@ async function logout(req,res){
     }
     if(token){
         await blacklist.create({token})
-}
-     res.clearCookie('token')
-     return res.status(200).json({
+    }
+
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none'
+    })
+
+    return res.status(200).json({
         message:'user logout successfully'
-     })
+    })
 }
 
 async function getme(req,res){
